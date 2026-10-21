@@ -1,0 +1,49 @@
+(() => {
+  const reel = document.querySelector('.motion-reel');
+  if (!reel) return;
+
+  reel.classList.add('motion-cinema');
+  reel.innerHTML = '<canvas class="motion-canvas" aria-label="15 秒 AI 视觉工作流动态展示"></canvas><div class="cinema-hud"><div><span class="cinema-kicker">AIGC VISUAL PRODUCTION / CASE FILM</span><strong class="cinema-title">PROMPT FIELD</strong><small class="cinema-subtitle">从需求开始，不从工具开始</small></div><span class="cinema-clock">00:00 / 00:15</span></div><div class="cinema-bottom"><span class="cinema-scene">01 / 06</span><span class="cinema-caption">BRIEF → VISUAL SYSTEM → OUTPUT</span><button class="cinema-toggle" type="button">PAUSE</button><button class="cinema-replay" type="button">REPLAY ↻</button></div><div class="cinema-progress"><i></i></div>';
+
+  const canvas = reel.querySelector('canvas');
+  const ctx = canvas.getContext('2d');
+  const title = reel.querySelector('.cinema-title');
+  const subtitle = reel.querySelector('.cinema-subtitle');
+  const clock = reel.querySelector('.cinema-clock');
+  const scene = reel.querySelector('.cinema-scene');
+  const caption = reel.querySelector('.cinema-caption');
+  const progressBar = reel.querySelector('.cinema-progress i');
+  const toggle = reel.querySelector('.cinema-toggle');
+  const replay = reel.querySelector('.cinema-replay');
+  const duration = 15000;
+  const scenes = [
+    ['PROMPT FIELD', '从需求开始，不从工具开始', '01 / 06', 'BRIEF / INTENT / DIRECTION'],
+    ['IMAGE MATRIX', '许多视觉可能同时生成', '02 / 06', 'GENERATE / EXPLORE / SELECT'],
+    ['DESIGN SPACE', '进入你的视觉工作台', '03 / 06', 'IMAGE / MOTION / BRAND'],
+    ['COMPUTER ENTRY', '把素材送入可执行的系统', '04 / 06', 'INPUT / PROCESS / CONTROL'],
+    ['WORKFLOW NETWORK', '让每个判断都有去处', '05 / 06', 'PROMPT / REVIEW / ARCHIVE'],
+    ['OUTPUT ARCHIVE', '最后汇总成可交付的结果', '06 / 06', 'QUALITY / SPEED / DELIVERY']
+  ];
+  const imageSlots = ['assets/hero-hires-1.png', 'assets/hero-hires-3.png', 'assets/hero-hires-4.png', 'assets/page2-bg-violet-dark.png'];
+  const images = imageSlots.map(src => { const image = new Image(); image.src = src; return image; });
+  let start = performance.now(), elapsed = 0, running = true, raf;
+  let width = 0, height = 0, dpr = 1;
+
+  const resize = () => { const rect = reel.getBoundingClientRect(); dpr = Math.min(2, window.devicePixelRatio || 1); width = Math.max(320, rect.width); height = Math.max(420, rect.height); canvas.width = width * dpr; canvas.height = height * dpr; canvas.style.width = `${width}px`; canvas.style.height = `${height}px`; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+  const ease = value => value < .5 ? 2 * value * value : 1 - Math.pow(-2 * value + 2, 2) / 2;
+  const alpha = (value, from, to) => Math.max(0, Math.min(1, (value - from) / (to - from)));
+  const clear = () => { ctx.fillStyle = '#05070a'; ctx.fillRect(0, 0, width, height); const glow = ctx.createRadialGradient(width * .5, height * .48, 0, width * .5, height * .48, width * .62); glow.addColorStop(0, 'rgba(103,213,202,.16)'); glow.addColorStop(.45, 'rgba(92,80,185,.09)'); glow.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = glow; ctx.fillRect(0, 0, width, height); };
+  const text = (value, x, y, size, color, align = 'center', font = 'DM Mono') => { ctx.font = `${size}px ${font}`; ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = 'middle'; ctx.fillText(value, x, y); };
+  const line = (x1, y1, x2, y2, color, widthValue = 1) => { ctx.strokeStyle = color; ctx.lineWidth = widthValue; ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); };
+  const drawPrompt = p => { const cx = width / 2, cy = height / 2, count = 74; ctx.save(); ctx.translate(cx, cy); for (let i = 0; i < count; i++) { const angle = i / count * Math.PI * 2; const radius = 20 + p * Math.max(width, height) * .72 + (i % 4) * 9; ctx.save(); ctx.rotate(angle); ctx.globalAlpha = .22 + (i % 5) * .1; text(['subject: automotive', 'soft chrome light', 'brand world', 'cinematic frame', 'human / machine'][i % 5], radius, 0, Math.max(8, width / 105), '#b7f8ed', 'left'); ctx.restore(); } ctx.globalAlpha = .9; ctx.beginPath(); ctx.arc(0, 0, 24 + p * 12, 0, Math.PI * 2); ctx.strokeStyle = '#d9fff8'; ctx.lineWidth = 2; ctx.stroke(); text('PROMPT', 0, 0, 11, '#effffb'); ctx.restore(); };
+  const drawMatrix = p => { const cols = width > 700 ? 9 : 6, rows = width > 700 ? 5 : 7, gap = 8, tileW = (width - gap * (cols + 1)) / cols, tileH = (height * .66 - gap * (rows + 1)) / rows, startY = height * .18; for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) { const index = (x + y * cols) % images.length, image = images[index], zoom = .9 + p * .2, tx = gap + x * (tileW + gap), ty = startY + y * (tileH + gap) + Math.sin(p * 5 + x) * 4; ctx.save(); ctx.globalAlpha = .35 + ((x + y) % 4) * .12; ctx.translate(tx + tileW / 2, ty + tileH / 2); ctx.scale(zoom, zoom); if (image.complete && image.naturalWidth) { ctx.drawImage(image, -tileW / 2, -tileH / 2, tileW, tileH); } else { ctx.fillStyle = ['#4c9f9a', '#5550a6', '#8d5c9b', '#b58177'][index]; ctx.fillRect(-tileW / 2, -tileH / 2, tileW, tileH); } ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.fillRect(-tileW / 2, -tileH / 2, tileW, tileH); ctx.strokeStyle = 'rgba(217,255,248,.45)'; ctx.strokeRect(-tileW / 2, -tileH / 2, tileW, tileH); ctx.restore(); } text('MULTIPLE DIRECTIONS / ONE BRIEF', width / 2, height * .91, 11, '#d6d0de'); };
+  const drawSpace = p => { const cx = width * .5, cy = height * .55; for (let i = 0; i < 26; i++) { const angle = i * 2.4, orbit = 30 + ((i * 47) % 220), x = cx + Math.cos(angle + p * 2) * orbit * 1.7, y = cy + Math.sin(angle + p * 2) * orbit * .45; const w = 32 + (i % 4) * 22, h = 22 + (i % 3) * 18; ctx.save(); ctx.translate(x, y); ctx.rotate(Math.sin(i) * .12); ctx.fillStyle = i % 3 === 0 ? 'rgba(133,235,217,.58)' : 'rgba(192,170,247,.5)'; ctx.fillRect(-w / 2, -h / 2, w, h); ctx.strokeStyle = 'rgba(245,240,229,.6)'; ctx.strokeRect(-w / 2, -h / 2, w, h); ctx.restore(); } ctx.fillStyle = '#d8fff4'; ctx.shadowColor = '#90e8d5'; ctx.shadowBlur = 26; ctx.fillRect(cx - 46, cy - 46, 92, 92); ctx.shadowBlur = 0; text('VISUAL', cx, cy - 7, 11, '#0b1112'); text('SPACE', cx, cy + 10, 11, '#0b1112'); };
+  const drawComputer = p => { const bx = width * .2, by = height * .23, bw = width * .6, bh = height * .52; ctx.save(); ctx.translate((p - .5) * 70, 0); ctx.fillStyle = '#12151c'; ctx.strokeStyle = '#d5c8e9'; ctx.lineWidth = 2; ctx.beginPath(); ctx.roundRect(bx, by, bw, bh, 18); ctx.fill(); ctx.stroke(); ctx.fillStyle = 'rgba(122,217,205,.17)'; ctx.fillRect(bx + 18, by + 18, bw - 36, bh - 58); for (let i = 0; i < 5; i++) { ctx.fillStyle = i % 2 ? 'rgba(198,166,255,.65)' : 'rgba(117,226,204,.55)'; ctx.fillRect(bx + 38, by + 48 + i * 34, bw * (.35 + (i % 3) * .12), 7); } ctx.fillStyle = '#9a8eb0'; ctx.fillRect(bx + bw * .38, by + bh, bw * .24, 24); ctx.fillRect(bx + bw * .26, by + bh + 24, bw * .48, 7); ctx.restore(); text('OPEN THE WORKFLOW', width / 2, height * .9, 11, '#e8dff3'); };
+  const drawNetwork = p => { const cx = width / 2, cy = height * .53, nodes = [['BRIEF', -.42, -.22], ['PROMPT', -.1, -.38], ['IMAGE', .36, -.2], ['REVIEW', -.32, .22], ['ARCHIVE', .08, .38], ['DELIVER', .43, .2]]; ctx.save(); ctx.translate(cx, cy); const scale = .7 + p * .48; ctx.scale(scale, scale); nodes.forEach((node, i) => { const x = node[1] * width, y = node[2] * height; line(0, 0, x, y, i % 2 ? 'rgba(173,155,255,.75)' : 'rgba(137,235,215,.75)', 2); }); nodes.forEach((node, i) => { const x = node[1] * width, y = node[2] * height; ctx.fillStyle = i % 2 ? '#b89bff' : '#9aefd9'; ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = 18; ctx.beginPath(); ctx.arc(x, y, 7, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.strokeStyle = 'rgba(240,237,226,.5)'; ctx.strokeRect(x - 46, y - 25, 92, 50); text(node[0], x, y, 10, '#f2eee5'); }); ctx.fillStyle = '#d9fff5'; ctx.beginPath(); ctx.arc(0, 0, 20 + p * 8, 0, Math.PI * 2); ctx.fill(); text('AI', 0, 0, 11, '#101619'); ctx.restore(); };
+  const drawOutput = p => { const cx = width / 2, cy = height * .5, s = Math.min(width, height) * (.16 + p * .08); ctx.save(); ctx.translate(cx, cy); ctx.rotate(-.08); const layers = 5; for (let i = layers - 1; i >= 0; i--) { const w = s * (2.1 - i * .1), h = s * .42; ctx.fillStyle = i === 0 ? 'rgba(217,255,245,.82)' : `rgba(${120 + i * 20},${135 + i * 10},${220 + i * 6},.45)`; ctx.strokeStyle = 'rgba(241,238,228,.8)'; ctx.fillRect(-w / 2, -h / 2 + i * 32, w, h); ctx.strokeRect(-w / 2, -h / 2 + i * 32, w, h); } ctx.restore(); text('40+ / DAY', width / 2, height * .77, 24, '#effff8', 'center', 'DM Mono'); text('QUALITY CHECKED · ARCHIVED · READY TO DELIVER', width / 2, height * .86, 10, '#b6e9ce'); };
+  const draw = now => { if (!start) start = now - elapsed; elapsed = now - start; if (elapsed >= duration) { start = now; elapsed = 0; } const progress = elapsed / duration, segment = Math.min(5, Math.floor(progress * 6)), local = progress * 6 - segment; clear(); const scenesDraw = [drawPrompt, drawMatrix, drawSpace, drawComputer, drawNetwork, drawOutput]; scenesDraw[segment](ease(local)); const meta = scenes[segment]; title.textContent = meta[0]; subtitle.textContent = meta[1]; scene.textContent = meta[2]; caption.textContent = meta[3]; clock.textContent = `00:${String(Math.floor(elapsed / 1000)).padStart(2, '0')} / 00:15`; progressBar.style.width = `${progress * 100}%`; reel.classList.toggle('is-paused', !running); if (running) raf = requestAnimationFrame(draw); };
+  const restart = () => { cancelAnimationFrame(raf); elapsed = 0; start = performance.now(); running = true; toggle.textContent = 'PAUSE'; raf = requestAnimationFrame(draw); };
+  toggle.addEventListener('click', () => { running = !running; toggle.textContent = running ? 'PAUSE' : 'PLAY'; if (running) { start = performance.now() - elapsed; raf = requestAnimationFrame(draw); } });
+  replay.addEventListener('click', restart);
+  new ResizeObserver(resize).observe(reel); resize(); restart();
+})();
