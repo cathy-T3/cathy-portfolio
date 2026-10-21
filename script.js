@@ -134,9 +134,9 @@ if(profilePage){
   stage.addEventListener('pointerleave',()=>{stage.style.setProperty('--profile-drift-x','0px');stage.style.setProperty('--profile-drift-y','0px')});
 }
 document.querySelectorAll('.skill-card').forEach(card=>card.addEventListener('click',()=>{document.querySelectorAll('.skill-card').forEach(item=>item.classList.remove('is-active'));card.classList.add('is-active')}));
-const heroImage=document.querySelector('.hero-image'),sceneButtons=document.querySelectorAll('.hero-scene-nav button'),scenes=['assets/hero-hires-1.png','assets/hero-hires-3.png','assets/hero-hires-4.png'];let activeScene=0;
+const heroImage=document.querySelector('.hero-image'),sceneButtons=document.querySelectorAll('.hero-scene-nav button'),scenes=['assets/profile/cathy-studio.png','assets/hero-archive-gallery.png','assets/hero-command-room.png'];let activeScene=0;
 function setScene(i){activeScene=(i+scenes.length)%scenes.length;heroImage?.classList.add('scene-changing');if(heroImage)heroImage.style.backgroundImage=`url("${scenes[activeScene]}")`;sceneButtons.forEach((button,n)=>button.classList.toggle('is-active',n===activeScene));window.setTimeout(()=>heroImage?.classList.remove('scene-changing'),900)}
-setScene(0);sceneButtons.forEach((button,n)=>button.addEventListener('click',e=>{e.stopPropagation();setScene(n)}));window.setInterval(()=>setScene(activeScene+1),1000);
+setScene(0);sceneButtons.forEach((button,n)=>button.addEventListener('click',e=>{e.stopPropagation();setScene(n)}));window.setInterval(()=>setScene(activeScene+1),7000);
 window.addEventListener('scroll',()=>{const orb=document.querySelector('.orbit');if(orb&&innerWidth>760)orb.style.transform=`translateY(${Math.min(scrollY*.05,35)}px) rotate(-21deg)`},{passive:true});
 window.addEventListener('scroll',()=>{const progress=document.querySelector('.hero-progress span');if(progress){const max=document.documentElement.scrollHeight-innerHeight;progress.style.height=`${Math.max(18,Math.min(100,(scrollY/max)*100))}%`}}, {passive:true});
 document.querySelector('.hero')?.addEventListener('pointermove',e=>{if(innerWidth<760)return;const x=(e.clientX/innerWidth-.5)*10,y=(e.clientY/innerHeight-.5)*8;const frame=document.querySelector('.frame');if(frame)frame.style.transform=`translate(${x}px,${y}px) rotate(-7deg)`},{passive:true});
