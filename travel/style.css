@@ -59,3 +59,35 @@
 :root[data-theme="dark"] .progress{background:#423a50}
 :root[data-theme="dark"] .home-cta{background:#090713}
 .toast.show{pointer-events:auto}
+
+/* Nearby places collapse into one accessible zoom target. */
+.map-cluster{min-width:74px;height:38px;padding:0 9px;background:linear-gradient(125deg,#8141ec,#a877ee);border-radius:18px;display:flex;align-items:center;justify-content:center;gap:4px;z-index:2;box-shadow:0 9px 18px #5b2e9f55;white-space:nowrap}
+.map-cluster.planned{background:linear-gradient(125deg,#c5a9ec,#d5bff0);color:#351e58}
+.cluster-lens{font-size:18px;line-height:1;transform:translateY(-1px)}
+.map-cluster-hint{margin:0;padding:0 16px 10px;color:#81758f;font-size:10px;font-weight:600}
+.map-cluster-hint[hidden]{display:none}
+.focus-map{height:220px;position:relative;overflow:hidden;border-radius:19px;background:linear-gradient(150deg,#f8f8fc,#efedf5);border:1px solid #eee9f4}
+#focusMapSvg,.focus-map-pins{position:absolute;inset:0}
+#focusMapSvg svg{display:block;width:100%;height:100%;overflow:hidden}
+#focusMapSvg path,#focusMapSvg circle{fill:#dfe0e6;stroke:#f8f8fb;stroke-width:.7}
+#focusMapSvg path.planned,#focusMapSvg circle.planned{fill:#cdb6f6;stroke:#fbf9ff}
+#focusMapSvg path.lit,#focusMapSvg circle.lit{fill:#8342ef;stroke:#f4eaff}
+.focus-map-pins{pointer-events:none}
+.focus-map-pin{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;display:grid;place-items:center;border-radius:50%;border:2px solid #fff;background:#8240ec;color:#fff;font-size:12px;font-weight:800;box-shadow:0 4px 11px #31214a66;pointer-events:auto}
+.focus-map-pin.planned{background:#c5a9ec;color:#321956}
+.focus-map-pin:active{transform:translate(-50%,-50%) scale(.88)}
+.focus-list{display:grid;gap:7px;margin-top:14px}
+.focus-list button{display:flex;align-items:center;gap:11px;width:100%;padding:11px;border:1px solid #eee9f5;border-radius:16px;background:#fff;text-align:left;color:#211a2c}
+.focus-list button>span:nth-child(2){flex:1;min-width:0}
+.focus-list strong,.focus-list small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.focus-list strong{font-size:13px}
+.focus-list small{font-size:10px;color:#8e8799;margin-top:3px}
+.focus-list b{font-weight:400;color:#8e66cb}
+.focus-index{width:30px;height:30px;display:grid;place-items:center;flex:none;border-radius:50%;background:#eee6fa;color:#7b40ce;font-size:12px;font-weight:800}
+:root[data-theme="dark"] .map-cluster-hint{color:#bdb0cf}
+:root[data-theme="dark"] .focus-map{background:linear-gradient(150deg,#24212f,#1d1b2a);border-color:#43394e}
+:root[data-theme="dark"] #focusMapSvg path,:root[data-theme="dark"] #focusMapSvg circle{fill:#484554;stroke:#24212f}
+:root[data-theme="dark"] #focusMapSvg path.planned,:root[data-theme="dark"] #focusMapSvg circle.planned{fill:#795da7;stroke:#312740}
+:root[data-theme="dark"] #focusMapSvg path.lit,:root[data-theme="dark"] #focusMapSvg circle.lit{fill:#a16cf8;stroke:#4e3376}
+:root[data-theme="dark"] .focus-list button{background:#30283c;border-color:#514360;color:#f6efff}
+:root[data-theme="dark"] .focus-index{background:#4a3665;color:#dbbaff}
