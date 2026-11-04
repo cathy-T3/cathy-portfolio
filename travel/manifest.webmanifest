@@ -1,1 +1,1 @@
-{"name":"去野 · 旅行规划手帐","short_name":"去野","start_url":"./","display":"standalone","background_color":"#e8ede8","theme_color":"#e8ede8","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{"name":"绮途 · 一起点亮旅途","short_name":"绮途","description":"记录旅行足迹，规划下一段旅程。","start_url":"./","scope":"./","display":"standalone","background_color":"#f7f7fa","theme_color":"#f7f7fa","icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
